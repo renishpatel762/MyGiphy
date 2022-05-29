@@ -1,11 +1,11 @@
 import axios from 'axios';
 import React, { useCallback, useEffect, useState } from 'react'
-import Loader from './Loader';
 import Paginate from './Paginate';
+import RenderError from './RenderError';
+import RenderGif from './RenderGif';
 
-const Giphy = () => {
+const Giphy = (props) => {
   const [data, setData] = useState([]);
-  const [query, setQuery] = useState("");
   const [isloading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
@@ -15,6 +15,7 @@ const Giphy = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
   let mq="abc";
+  const GIPHY_API=props.apikey;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,7 +25,7 @@ const Giphy = () => {
       try {
         const results = await axios("https://api.giphy.com/v1/gifs/trending", {
           params: {
-            api_key: "GlVGYHkr3WSBnllca54iNt0yFbjz7L65",
+            api_key: GIPHY_API,
             limit: 30
           }
         });
@@ -42,42 +43,19 @@ const Giphy = () => {
     fetchData();
   }, []);
 
-  const renderGifs = () => {
-    // console.log("ender gif called");
-    if (isloading) {
-      return <Loader />
-    }
-    return currentItems.map(el => {
-      return (
-        <div key={el.id} className='gif'>
-          <img className={'gifimage'} src={el.images.fixed_height.url} />
-        </div>
-      )
-    })
-  }
-
-  const renderError = () => {
-    if (isError) {
-      return (
-        <div className="alert alert-danger alert-dismissible fade show" role="alert">
-          Unable to fetch Gifs, please try again
-        </div>
-      );
-    }
-  }
-
-
   const getData = async event => {
     event.preventDefault();
     const {value}=event.target;
+
     mq=value;
+
     setIsError(false);
     setIsLoading(true);
 
     try {
       const results = await axios("https://api.giphy.com/v1/gifs/search", {
         params: {
-          api_key: "GlVGYHkr3WSBnllca54iNt0yFbjz7L65",
+          api_key: GIPHY_API,
           q: mq,
           limit: 30
         }
@@ -87,7 +65,6 @@ const Giphy = () => {
       setIsError(true);
       setTimeout(() => setIsError(false), 4000);
     }
-
     setIsLoading(false);
   };
 
@@ -104,9 +81,6 @@ const Giphy = () => {
   }
   const BetterFunction=useCallback(myDeBounce(getData),[]);
 
-  // const handleSearchChange = event => {
-  //   setQuery(event.target.value);
-  // };
 
   const pageSelected = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -114,7 +88,7 @@ const Giphy = () => {
 
   return (
     <div className="inner-container">
-      {renderError()}
+      <RenderError isError={isError} />
       <form className="form-inline d-flex justify-content-center p-2">
         <input
           // value={query}
@@ -134,7 +108,7 @@ const Giphy = () => {
         </button>
       </form>
       <div className='gif-container gifs'>
-        {renderGifs()}
+        <RenderGif isloading={isloading} currentItems={currentItems} />
       </div>
       <Paginate
         pageSelected={pageSelected}
