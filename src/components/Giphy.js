@@ -14,8 +14,8 @@ const Giphy = (props) => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-  let mq="abc";
-  const GIPHY_API=props.apikey;
+  let mq = "abc";
+  const GIPHY_API = props.apikey;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,7 +30,6 @@ const Giphy = (props) => {
           }
         });
 
-        console.log(results);
         setData(results.data.data);
       } catch (err) {
         setIsError(true);
@@ -45,9 +44,9 @@ const Giphy = (props) => {
 
   const getData = async event => {
     event.preventDefault();
-    const {value}=event.target;
+    const { value } = event.target;
 
-    mq=value;
+    mq = value;
 
     setIsError(false);
     setIsLoading(true);
@@ -68,18 +67,18 @@ const Giphy = (props) => {
     setIsLoading(false);
   };
 
-  const myDeBounce=(call)=>{
+  const myDeBounce = (call) => {
     let timer;
-    return function(...args){
-      const context=this;
-      if(timer) clearTimeout(timer);
-      timer = setTimeout(()=>{
-        timer=null
-        call.apply(context,args);
-      },500);
+    return function (...args) {
+      const context = this;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        timer = null
+        call.apply(context, args);
+      }, 500);
     }
   }
-  const BetterFunction=useCallback(myDeBounce(getData),[]);
+  const BetterFunction = useCallback(myDeBounce(getData), []);
 
 
   const pageSelected = (pageNumber) => {
